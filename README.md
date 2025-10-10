@@ -23,19 +23,19 @@ A web/mobile app connecting customers with nearby street vendors in real-time. C
 ## Screenshots
 
 ### Homepage
-![Homepage](screenshots/homepage.png)
+![Homepage](fruits/screenshots/homepage.png)
 
 ### Customer Dashboard
-![Customer Dashboard](screenshots/customer_dashboard.png)
+![Customer Dashboard](fruits/screenshots/customer_dashboard.png)
 
 ### Vendor Dashboard
-![Vendor Dashboard](screenshots/vendor_dashboard.png)
+![Vendor Dashboard](fruits/screenshots/vendor_dashboard.png)
 
 ### Customer Search
-![Customer Search](screenshots/customer_search.png)
+![Customer Search](fruits/screenshots/customer_search.png)
 
 ### Vendor Product
-![Vendor Product](screenshots/vendor_product.png)
+![Vendor Product](fruits/screenshots/vendor_product.png)
 
 ---
 
