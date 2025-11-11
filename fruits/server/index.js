@@ -1,5 +1,7 @@
 const express = require('express');
 const http = require('http');
+
+
 const { Server } = require('socket.io');
 const Vendor = require('./models/Vendor');
 const mongoose = require('mongoose');
@@ -9,6 +11,7 @@ const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
+app.set('trust proxy', 1);
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {

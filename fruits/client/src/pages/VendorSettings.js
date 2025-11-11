@@ -66,11 +66,19 @@ const VendorSettings = () => {
       const { currentPassword, newPassword, confirmPassword, operatingStart, operatingEnd, email, ...rest } = formData;
 
       const payload = {
-        ...rest,
-        operatingHours: (operatingStart || operatingEnd)
-          ? { start: operatingStart, end: operatingEnd }
-          : undefined
+        ...rest
       };
+      
+      // Only include operatingHours if both start and end are provided
+      if (operatingStart && operatingEnd) {
+        payload.operatingHours = { start: operatingStart, end: operatingEnd };
+      } else if (operatingStart || operatingEnd) {
+        // If only one is provided, use existing value for the other
+        payload.operatingHours = {
+          start: operatingStart || user?.operatingHours?.start || '',
+          end: operatingEnd || user?.operatingHours?.end || ''
+        };
+      }
 
       await axios.put('/api/vendors/profile', payload);
 
