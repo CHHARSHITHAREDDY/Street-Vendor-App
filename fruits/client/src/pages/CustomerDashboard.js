@@ -1,16 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
+// import { 
+//   Search as SearchIcon, 
+//   MapPin, 
+//   Clock, 
+//   Star, 
+//   Heart, 
+//   History, 
+//   Settings as SettingsIcon,
+//   TrendingUp,
+  
+// } from 'lucide-react';
 import { 
   Search as SearchIcon, 
   MapPin, 
-  Clock, 
-  Star, 
   Heart, 
   History, 
   Settings as SettingsIcon,
-  TrendingUp,
-  Filter
+  TrendingUp
 } from 'lucide-react';
+
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import toast from 'react-hot-toast';

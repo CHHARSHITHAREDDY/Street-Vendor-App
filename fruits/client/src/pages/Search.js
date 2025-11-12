@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { Search as SearchIcon, MapPin, Star, Clock, Filter, X, Loader } from 'lucide-react';
+import { Search as SearchIcon, MapPin, Star,  Filter, Loader } from 'lucide-react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { socket } from '../index';

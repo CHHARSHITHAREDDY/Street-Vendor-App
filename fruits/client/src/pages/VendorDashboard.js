@@ -10,9 +10,9 @@ import {
   Trash2, 
   ToggleLeft, 
   ToggleRight,
-  Clock,
+  
   Star,
-  Users,
+  
   TrendingUp
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -22,6 +22,7 @@ import VendorLocation from './VendorLocation';
 import VendorSettings from './VendorSettings';
 import { socket } from '../index';
 
+// Dashboard Overview Component
 // Dashboard Overview Component
 const DashboardOverview = () => {
   const { user, updateUser } = useAuth();
@@ -34,35 +35,35 @@ const DashboardOverview = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchStats();
-  }, []);
+    const fetchStats = async () => {
+      try {
+        const response = await axios.get('/api/vendors/profile');
+        const vendor = response.data.vendor;
+        setStats({
+          productsCount: vendor.productsCount,
+          availableProductsCount: vendor.availableProductsCount,
+          totalViews: 0,
+          rating: vendor.rating
+        });
 
-  const fetchStats = async () => {
-    try {
-      const response = await axios.get('/api/vendors/profile');
-      const vendor = response.data.vendor;
-      setStats({
-        productsCount: vendor.productsCount,
-        availableProductsCount: vendor.availableProductsCount,
-        totalViews: 0, // This would come from analytics
-        rating: vendor.rating
-      });
-      // Keep key vendor fields in auth state in case of drift
-      updateUser({
-        id: vendor.id,
-        name: vendor.name,
-        businessName: vendor.businessName,
-        isAvailable: vendor.isAvailable,
-        operatingHours: vendor.operatingHours,
-        location: vendor.location
-      });
-    } catch (error) {
-      console.error('Error fetching stats:', error);
-      toast.error('Failed to load dashboard data');
-    } finally {
-      setLoading(false);
-    }
-  };
+        updateUser({
+          id: vendor.id,
+          name: vendor.name,
+          businessName: vendor.businessName,
+          isAvailable: vendor.isAvailable,
+          operatingHours: vendor.operatingHours,
+          location: vendor.location
+        });
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+        toast.error('Failed to load dashboard data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, [updateUser]);
 
   const toggleAvailability = async () => {
     try {
@@ -123,9 +124,7 @@ const DashboardOverview = () => {
         {statCards.map((stat, index) => (
           <div key={index} className="card">
             <div className="flex items-center">
-              <div className={`p-3 rounded-lg ${stat.color}`}>
-                {stat.icon}
-              </div>
+              <div className={`p-3 rounded-lg ${stat.color}`}>{stat.icon}</div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">{stat.title}</p>
                 <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
@@ -135,7 +134,7 @@ const DashboardOverview = () => {
         ))}
       </div>
 
-      {/* Quick Actions */}
+      {/* Quick Actions & Business Status */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="card">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
@@ -169,21 +168,25 @@ const DashboardOverview = () => {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">Availability</span>
-            <div className="flex items-center space-x-2">
-              <span className={`px-2 py-1 rounded-full text-xs ${
-                user?.isAvailable 
-                  ? 'bg-green-100 text-green-800' 
-                  : 'bg-red-100 text-red-800'
-              }`}>
-                {user?.isAvailable ? 'Online' : 'Offline'}
-              </span>
-              <button
-                onClick={toggleAvailability}
-                className={`px-2 py-1 text-xs rounded border ${user?.isAvailable ? 'border-red-200 text-red-600 hover:bg-red-50' : 'border-green-200 text-green-600 hover:bg-green-50'}`}
-              >
-                {user?.isAvailable ? 'Go Offline' : 'Go Online'}
-              </button>
-            </div>
+              <div className="flex items-center space-x-2">
+                <span
+                  className={`px-2 py-1 rounded-full text-xs ${
+                    user?.isAvailable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  }`}
+                >
+                  {user?.isAvailable ? 'Online' : 'Offline'}
+                </span>
+                <button
+                  onClick={toggleAvailability}
+                  className={`px-2 py-1 text-xs rounded border ${
+                    user?.isAvailable
+                      ? 'border-red-200 text-red-600 hover:bg-red-50'
+                      : 'border-green-200 text-green-600 hover:bg-green-50'
+                  }`}
+                >
+                  {user?.isAvailable ? 'Go Offline' : 'Go Online'}
+                </button>
+              </div>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600">Operating Hours</span>
