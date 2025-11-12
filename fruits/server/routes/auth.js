@@ -270,6 +270,9 @@ router.get('/me', auth, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+router.get('/test', (req, res) => {
+  res.json({ message: 'Auth route working fine on Railway!' });
+});
 
 // @route   PUT /api/auth/change-password
 // @desc    Change user password
