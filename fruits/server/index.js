@@ -16,7 +16,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: process.env.NODE_ENV === 'production'
-      ? ['https://yourdomain.com']
+      ? ['https://street-vendor-frontend2.vercel.app']
       : ['http://localhost:3000'],
     credentials: true
   }
@@ -79,10 +79,11 @@ app.use(limiter);
 // CORS
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://yourdomain.com'] 
+    ? ['https://street-vendor-frontend2.vercel.app'] 
     : ['http://localhost:3000'],
   credentials: true
 }));
+
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
