@@ -15,6 +15,8 @@ import {
   Search as SearchIcon, 
   MapPin, 
   Heart, 
+  Clock,
+  Star,
   History, 
   Settings as SettingsIcon,
   TrendingUp
@@ -332,7 +334,9 @@ const Favorites = () => {
 
 // Settings Component
 const Settings = () => {
-  const { user, updateUser } = useAuth();
+  
+
+ const { user, updateUser } = useAuth();
   const [preferences, setPreferences] = useState({
     categories: [],
     maxDistance: 10,
@@ -354,7 +358,7 @@ const Settings = () => {
     setLoading(true);
     try {
       await axios.put('/api/customers/preferences', preferences);
-      updateUser({ preferences });
+      //updateUser({ preferences });
       toast.success('Preferences updated successfully');
     } catch (error) {
       console.error('Error updating preferences:', error);
@@ -515,11 +519,12 @@ const CustomerDashboard = () => {
           {/* Main Content */}
           <div className="lg:col-span-3">
             <Routes>
-              <Route path="/" element={<DashboardOverview />} />
-              <Route path="/history" element={<SearchHistory />} />
-              <Route path="/favorites" element={<Favorites />} />
-              <Route path="/settings" element={<Settings />} />
-            </Routes>
+  <Route path="/customer-dashboard" element={<DashboardOverview />} />
+  <Route path="/customer-dashboard/history" element={<SearchHistory />} />
+  <Route path="/customer-dashboard/favorites" element={<Favorites />} />
+  <Route path="/customer-dashboard/settings" element={<Settings />} />
+</Routes>
+
           </div>
         </div>
       </div>

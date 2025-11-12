@@ -212,12 +212,7 @@ const ProductsManagement = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
-
-  useEffect(() => {
-    fetchProducts();
-  }, [filter]);
-
-  const fetchProducts = async () => {
+const fetchProducts = async () => {
     try {
       const params = new URLSearchParams();
       if (filter !== 'all') {
@@ -233,6 +228,11 @@ const ProductsManagement = () => {
       setLoading(false);
     }
   };
+  useEffect(() => {
+    fetchProducts();
+  }, [filter]);
+
+  
 
   const toggleProductAvailability = async (productId, isAvailable) => {
     try {
