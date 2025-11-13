@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import axios from 'axios';
 
+import api from '../api/axios'; 
 const AuthContext = createContext();
 
 const initialState = {
@@ -70,21 +70,14 @@ const authReducer = (state, action) => {
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // Set up axios defaults
-  useEffect(() => {
-    if (state.token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${state.token}`;
-    } else {
-      delete axios.defaults.headers.common['Authorization'];
-    }
-  }, [state.token]);
+ 
 
   // Load user on app start
   useEffect(() => {
     const loadUser = async () => {
       if (state.token) {
         try {
-          const response = await axios.get('/api/auth/me');
+          const response = await api.get('/api/auth/me');
           dispatch({
             type: 'LOGIN_SUCCESS',
             payload: {
@@ -110,7 +103,7 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: 'LOGIN_START' });
     
     try {
-      const response = await axios.post(`/api/auth/${userType}/login`, {
+      const response = await api.post(`/api/auth/${userType}/login`, {
         email,
         password
       });
@@ -139,7 +132,7 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: 'REGISTER_START' });
     
     try {
-      const response = await axios.post(`/api/auth/${userType}/register`, userData);
+      const response = await api.post(`/api/auth/${userType}/register`, userData);
 
       const { token, user } = response.data;
       localStorage.setItem('token', token);

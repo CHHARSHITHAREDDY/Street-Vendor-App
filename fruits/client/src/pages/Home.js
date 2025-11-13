@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MapPin, Search, Store, Users, Clock, Star, ArrowRight, CheckCircle } from 'lucide-react';
+import { MapPin, Search, Store, Users,  ArrowRight, CheckCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Home = () => {
