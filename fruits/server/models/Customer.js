@@ -1,3 +1,197 @@
+// const mongoose = require('mongoose');
+// const bcrypt = require('bcryptjs');
+
+// const customerSchema = new mongoose.Schema({
+//   name: {
+//     type: String,
+//     required: [true, 'Name is required'],
+//     trim: true,
+//     maxlength: [50, 'Name cannot be more than 50 characters']
+//   },
+//   email: {
+//     type: String,
+//     required: [true, 'Email is required'],
+//     unique: true,
+//     lowercase: true,
+//     match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
+//   },
+//   password: {
+//     type: String,
+//     required: [true, 'Password is required'],
+//     minlength: [6, 'Password must be at least 6 characters']
+//   },
+//   phone: {
+//     type: String,
+//     match: [/^[\+]?[1-9][\d]{0,15}$/, 'Please enter a valid phone number']
+//   },
+//   location: {
+//     type: {
+//       type: String,
+//       enum: ['Point']
+//     },
+//     coordinates: {
+//       type: [Number], // [longitude, latitude]
+//       validate: {
+//         validator: function(coords) {
+//           return !coords || (coords.length === 2 && 
+//                  coords[0] >= -180 && coords[0] <= 180 && 
+//                  coords[1] >= -90 && coords[1] <= 90);
+//         },
+//         message: 'Invalid coordinates'
+//       }
+//     },
+//     address: {
+//       type: String,
+//       trim: true
+//     },
+//     city: {
+//       type: String,
+//       trim: true
+//     },
+//     state: {
+//       type: String,
+//       trim: true
+//     },
+//     zipCode: {
+//       type: String,
+//       trim: true
+//     }
+//   },
+//   preferences: {
+//     categories: [{
+//       type: String,
+//       enum: [
+//         'fruits',
+//         'vegetables',
+//         'dairy',
+//         'meat',
+//         'beverages',
+//         'snacks',
+//         'bakery',
+//         'grocery',
+//         'other'
+//       ]
+//     }],
+//     maxDistance: {
+//       type: Number,
+//       default: 10, // in kilometers
+//       min: 1,
+//       max: 100
+//     },
+//     organic: {
+//       type: Boolean,
+//       default: false
+//     },
+//     local: {
+//       type: Boolean,
+//       default: true
+//     }
+//   },
+//   searchHistory: [{
+//     query: {
+//       type: String,
+//       required: true,
+//       trim: true
+//     },
+//     location: {
+//       type: {
+//         type: String,
+//         enum: ['Point'],
+//         default: 'Point'
+//       },
+//       coordinates: [Number]
+//     },
+//     timestamp: {
+//       type: Date,
+//       default: Date.now
+//     },
+//     resultsCount: Number
+//   }],
+//   favoriteVendors: [{
+//     type: mongoose.Schema.Types.ObjectId,
+//     ref: 'Vendor'
+//   }],
+//   isActive: {
+//     type: Boolean,
+//     default: true
+//   }
+// }, {
+//   timestamps: true
+// });
+
+// // Create geospatial index for location queries
+// customerSchema.index({ location: '2dsphere' });
+// customerSchema.index({ 'searchHistory.timestamp': -1 });
+
+// // Hash password before saving
+// customerSchema.pre('save', async function(next) {
+//   if (!this.isModified('password')) return next();
+  
+//   try {
+//     const salt = await bcrypt.genSalt(12);
+//     this.password = await bcrypt.hash(this.password, salt);
+//     next();
+//   } catch (error) {
+//     next(error);
+//   }
+// });
+
+// // Remove location if it doesn't have coordinates
+// customerSchema.pre('save', function(next) {
+//   if (this.location && (!this.location.coordinates || this.location.coordinates.length !== 2)) {
+//     this.location = undefined;
+//   }
+//   next();
+// });
+
+// // Compare password method
+// customerSchema.methods.comparePassword = async function(candidatePassword) {
+//   return await bcrypt.compare(candidatePassword, this.password);
+// };
+
+// // Add search to history
+// customerSchema.methods.addSearchHistory = function(query, location, resultsCount) {
+//   this.searchHistory.unshift({
+//     query,
+//     location: location ? {
+//       type: 'Point',
+//       coordinates: location
+//     } : undefined,
+//     resultsCount
+//   });
+  
+//   // Keep only last 50 searches
+//   if (this.searchHistory.length > 50) {
+//     this.searchHistory = this.searchHistory.slice(0, 50);
+//   }
+  
+//   return this.save();
+// };
+
+// // Get personalized suggestions based on search history
+// customerSchema.methods.getPersonalizedSuggestions = function() {
+//   const recentSearches = this.searchHistory.slice(0, 10);
+//   const searchCounts = {};
+  
+//   recentSearches.forEach(search => {
+//     const words = search.query.toLowerCase().split(/\s+/);
+//     words.forEach(word => {
+//       if (word.length > 2) { // Ignore very short words
+//         searchCounts[word] = (searchCounts[word] || 0) + 1;
+//       }
+//     });
+//   });
+  
+//   // Return top 5 most searched terms
+//   return Object.entries(searchCounts)
+//     .sort(([,a], [,b]) => b - a)
+//     .slice(0, 5)
+//     .map(([term]) => term);
+// };
+
+// module.exports = mongoose.model('Customer', customerSchema);
+
+
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
@@ -27,14 +221,16 @@ const customerSchema = new mongoose.Schema({
   location: {
     type: {
       type: String,
-      enum: ['Point']
+      enum: ['Point'],
+      default: 'Point'
     },
     coordinates: {
       type: [Number], // [longitude, latitude]
       validate: {
         validator: function(coords) {
-          return !coords || (coords.length === 2 && 
-                 coords[0] >= -180 && coords[0] <= 180 && 
+          // allow undefined/null (not set) OR exactly 2 valid numbers
+          return !coords || (coords.length === 2 &&
+                 coords[0] >= -180 && coords[0] <= 180 &&
                  coords[1] >= -90 && coords[1] <= 90);
         },
         message: 'Invalid coordinates'
@@ -99,13 +295,18 @@ const customerSchema = new mongoose.Schema({
         enum: ['Point'],
         default: 'Point'
       },
-      coordinates: [Number]
+      coordinates: {
+        type: [Number]
+      }
     },
     timestamp: {
       type: Date,
       default: Date.now
     },
-    resultsCount: Number
+    resultsCount: {
+      type: Number,
+      default: 0
+    }
   }],
   favoriteVendors: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -119,14 +320,29 @@ const customerSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Create geospatial index for location queries
+// INDEXES
 customerSchema.index({ location: '2dsphere' });
 customerSchema.index({ 'searchHistory.timestamp': -1 });
 
-// Hash password before saving
+// Remove sensitive fields when converting to JSON/object
+customerSchema.set('toJSON', {
+  transform: function(doc, ret, options) {
+    delete ret.password;
+    delete ret.__v;
+    return ret;
+  }
+});
+customerSchema.set('toObject', {
+  transform: function(doc, ret, options) {
+    delete ret.password;
+    delete ret.__v;
+    return ret;
+  }
+});
+
+// Hash password before saving (only when modified)
 customerSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
-  
   try {
     const salt = await bcrypt.genSalt(12);
     this.password = await bcrypt.hash(this.password, salt);
@@ -136,53 +352,67 @@ customerSchema.pre('save', async function(next) {
   }
 });
 
-// Remove location if it doesn't have coordinates
+// Remove location object if coordinates are missing/invalid
 customerSchema.pre('save', function(next) {
-  if (this.location && (!this.location.coordinates || this.location.coordinates.length !== 2)) {
-    this.location = undefined;
+  if (this.location) {
+    const coords = this.location.coordinates;
+    if (!coords || coords.length !== 2 || coords.some(c => typeof c !== 'number' || Number.isNaN(c))) {
+      // unset location entirely if invalid
+      this.location = undefined;
+    } else {
+      // ensure location.type exists
+      this.location.type = 'Point';
+    }
   }
   next();
 });
 
-// Compare password method
+// Compare password method (defensive)
 customerSchema.methods.comparePassword = async function(candidatePassword) {
+  if (!this.password) return false;
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
 // Add search to history
-customerSchema.methods.addSearchHistory = function(query, location, resultsCount) {
-  this.searchHistory.unshift({
+customerSchema.methods.addSearchHistory = function(query, coords, resultsCount = 0) {
+  const entry = {
     query,
-    location: location ? {
-      type: 'Point',
-      coordinates: location
-    } : undefined,
+    timestamp: new Date(),
     resultsCount
-  });
-  
+  };
+
+  if (Array.isArray(coords) && coords.length === 2) {
+    entry.location = {
+      type: 'Point',
+      coordinates: coords
+    };
+  }
+
+  // Add to beginning
+  this.searchHistory.unshift(entry);
+
   // Keep only last 50 searches
   if (this.searchHistory.length > 50) {
     this.searchHistory = this.searchHistory.slice(0, 50);
   }
-  
+
   return this.save();
 };
 
-// Get personalized suggestions based on search history
+// Get personalized suggestions based on recent search history
 customerSchema.methods.getPersonalizedSuggestions = function() {
   const recentSearches = this.searchHistory.slice(0, 10);
   const searchCounts = {};
-  
+
   recentSearches.forEach(search => {
-    const words = search.query.toLowerCase().split(/\s+/);
+    const words = (search.query || '').toLowerCase().split(/\s+/);
     words.forEach(word => {
-      if (word.length > 2) { // Ignore very short words
+      if (word.length > 2) { // ignore tiny words
         searchCounts[word] = (searchCounts[word] || 0) + 1;
       }
     });
   });
-  
-  // Return top 5 most searched terms
+
   return Object.entries(searchCounts)
     .sort(([,a], [,b]) => b - a)
     .slice(0, 5)

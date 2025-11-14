@@ -1,3 +1,7 @@
+router.options('*', (req, res) => {
+  res.sendStatus(200);
+});
+
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
@@ -258,7 +262,8 @@ router.get('/me', auth, async (req, res) => {
         ...(userType === 'vendor' ? {
           businessName: user.businessName,
           isAvailable: user.isAvailable,
-          location: user.location
+          location: user.location || null
+
         } : {
           location: user.location,
           preferences: user.preferences
