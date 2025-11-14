@@ -1,6 +1,3 @@
-router.options('*', (req, res) => {
-  res.sendStatus(200);
-});
 
 const express = require('express');
 const jwt = require('jsonwebtoken');
